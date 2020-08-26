@@ -1,14 +1,15 @@
-# -*- coding: utf-8 -*- 
+"""勉強会で作成した簡易プログラム
+
+    Google Chromeを起動してサイボウズにログインして
+    ログイン後のスクショを記念に取って終了する。
+
+"""
 import os, configparser, time, shutil, sys, pathlib, datetime, platform, glob
 import logging.config, logging
 from selenium import webdriver
 from selenium.webdriver.support.select import Select
 
-#-------------------------------------------------------
-#
-# サイボウズにとりあえずログインしてみる
-#
-#-------------------------------------------------------
+
 
 #-------------------------------------------------------
 #  設定ファイル情報取得キー
@@ -41,10 +42,14 @@ LOG_NAME=__name__
 _logger = None
 _config = None
 
-#--------------------------------------------------------
-# ブラウザオプション
-#--------------------------------------------------------
 def build_chrome_options():
+    """ Chrome 起動オプション生成
+    
+    Chrome 起動オプションを生成し、起動オプションオブジェクトを返す
+    
+    :return:chromeオプションパラメータを設定したオブジェクト
+    :rtype:ChromeOptions
+    """
     chrome_options = webdriver.ChromeOptions()
     #chrome_options.accept_untrusted_certs = True
     #chrome_options.assume_untrusted_cert_issuer = Truechrome_options.add_argument("--no-sandbox")
@@ -70,13 +75,13 @@ def build_chrome_options():
     #chrome_options.add_argument("--window-size=10x10")
     return chrome_options
 
-#--------------------------------------------------------
-#
-# グローバル変数のログ出力オブジェクト(_logger )を設定する
-# init_log
-#
-#--------------------------------------------------------
+
 def init_log():
+    """ログ出力オブジェクト(_logger )を設定する
+    ログ設定ファイル(CONF)をINIファイルから取得し
+    LOGオブジェクト(_logger)が構築される
+    """
+
     global _logger
 
     #--------------------------------------------------------
@@ -88,16 +93,13 @@ def init_log():
     logging.config.fileConfig(log_file_conf, disable_existing_loggers=False)
     _logger = logging.getLogger(LOG_NAME)
 
-#--------------------------------------------------------
-#
-# 初期処理
-#
-# 1. ログオブジェクト生成しグルーバル変数へ設定する
-# 2. 設定ファイルから情報を取得こちらも使いそうなのでグローバル変数へ設定する
-#--------------------------------------------------------
 def init():
+    """初期処理
 
-    global _config
+    設定ファイルから情報を取得グローバル変数(_config)へ設定する。
+    またログオブジェクト生成するためにinit_log()を呼出す
+
+    """
 
     #--------------------------------------------------------
     #設定ファイル読込
@@ -106,16 +108,24 @@ def init():
     #    自分自身のフルパスを取得して、ファイル名を設定ファイル名に変更する
     # 2. 設定ファイルの文字コードはUTF-8の想定
     #--------------------------------------------------------
+    global _config
     ini_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), INI_FILE)
     _config = configparser.SafeConfigParser()
     _config.read(ini_file, encoding='utf-8')
     #ログ設定ファイル取得
     init_log() 
 
-#--------------------------------------------------------
-# Chrome ブラウザオブジェクトを生成して返す
-#--------------------------------------------------------
+
 def create_browser():
+    """Chrome ブラウザオブジェクト生成
+    
+    build_chrome_options()を呼出してChromeオプションオブジェクトを取得し
+    Chromeドライバオブジェクトを生成し返す
+    
+    :return:Chrome Web Dirver
+    :rtype:WebDriver
+    
+    """
     _logger.info('create_browser start')
     # Chrome ブラウザのオブション情報を取得する
     # はっきりいって沢山ありすぎてわけわからん
@@ -128,17 +138,26 @@ def create_browser():
     browser.set_page_load_timeout(float(wait_time))
     return browser
 
-#--------------------------------------------------------
-# メイン処理
-#--------------------------------------------------------
 def run():
+    '''プログラムメイン処理
+
+    以下処理を行う
+    1. Chrome ブラウザ生成
+    2. サイボウズへ移動
+    3. グループ切替え画面へ遷移
+    4. サイボウズログイン
+    5. ログイン成功の記念にスクリーンショット
+    6. ブラウザクローズ
+
+
+    '''
     _logger.info('run start')
-    #Chrome ブラウザ生成
+    #1. Chrome ブラウザ生成
     browser = create_browser()
-    #サイボウズへ移動
+    #2. サイボウズへ移動
     saibouzu_url = _config.get(INI_SECTION_BASE,SAIBOUZU_URL_KEY)
     browser.get(saibouzu_url)
-    # グループ切替え画面へ遷移
+    #3. グループ切替え画面へ遷移
     browser.get( saibouzu_url + '?page=LoginGroup&group=2156&bpage=' )
     group_name = _config.get(INI_SECTION_USER, GROUP_NAME_KEY)
     lst_group_name = browser.find_element_by_name(GROUP_LST_NAME)
@@ -146,7 +165,7 @@ def run():
     select.select_by_visible_text(group_name)
     (browser.find_element_by_name(BTN_KIRIKAE)).click()
     _logger.debug( 'サイボウズ 組織変更成功')
-    #サイボウズログイン
+    #4. サイボウズログイン
     user_name = _config.get(INI_SECTION_USER, USER_NAME_KEY)
     user_passwd = _config.get(INI_SECTION_USER, PASSWD_KEY)
     lstUsrName = browser.find_element_by_name(USER_LST_NAME)
@@ -156,18 +175,21 @@ def run():
     txtPasswd.send_keys(user_passwd)
     (browser.find_element_by_name(BTN_LOGIN)).click()
     _logger.debug( 'サイボウズ ログイン成功')
-    #ログイン成功の記念にスクリーンショット
+    #5. ログイン成功の記念にスクリーンショット
     save_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'saibo.png')
     browser.save_screenshot(save_file)
-    #ブラウザクローズ
+    #6. ブラウザクローズ
     browser.close()
     browser.quit()
 
-#-------------------------------------------------------
-# プログラムスタート
-#-------------------------------------------------------
 if __name__ == '__main__':
-
+    """プログラム開始
+    
+    1.プログラムの初期処理実施のためinit()を呼出す
+    2.メイン処理のためrun()を呼出す
+    3.終了
+    
+    """
     #-------------------------------------------------------
     #プログラムの初期処理を実施します
     #-------------------------------------------------------
