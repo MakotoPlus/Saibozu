@@ -8,11 +8,11 @@ saibo.ini　に下記を設定します<br>
 <br>
 2.saibo_log.confファイルが存在するフルパス<br>
 　LOG_CONF = <br>
-　例 LOG_CONF =C:/Project/PythonStudy/Saibozu/saibo_log.conf<br>
+　例 LOG_CONF =C:/PythonStudy/Saibozu/saibo_log.conf<br>
 <br>
 3.ChromeDriverが存在するフルパス<br>
 　CHROME_DRIVER=<br>
-　例 CHROME_DRIVER=C:/Project/PythonStudy/Saibozu/chromedriver.exe<br>
+　例 CHROME_DRIVER=C:/PythonStudy/Saibozu/chromedriver.exe<br>
 <br>
 4.サーボウズアカウントID値<br>
 　ID=<br>
