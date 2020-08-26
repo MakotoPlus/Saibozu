@@ -9,20 +9,6 @@ import logging.config, logging
 from selenium import webdriver
 from selenium.webdriver.support.select import Select
 
-<<<<<<< HEAD
-
-=======
-''' 
- サイボウズにとりあえずログインして記念撮影？
-
- カレントディレクトリにあるsaibo.iniファイルから設定情報を読み込んで実行される。
-
-
-
- create 2020.07.05 m.fukuda
->>>>>>> origin/master
-
-'''
 #-------------------------------------------------------
 #  設定ファイル情報取得キー
 # -------------------------------------------------------
@@ -168,20 +154,6 @@ def create_browser():
     browser.set_page_load_timeout(float(wait_time))
     return browser
 
-<<<<<<< HEAD
-=======
-#--------------------------------------------------------
-# メイン処理
-#
-# 下記処理を行う
-# 1. Chromeブラウザ生成
-# 2. サイボウズサイトへアクセス
-# 3. 組織切り替え画面へ遷移し組織を選択
-# 4. ログイン画面に戻ってユーザID、パスワードを設定してログイン
-# 5. 記念撮影（スクリーンショット）
-# 6. ブラウザ閉じる
-#--------------------------------------------------------
->>>>>>> origin/master
 def run():
     '''プログラムメイン処理
 
@@ -196,14 +168,6 @@ def run():
 
     '''
     _logger.info('run start')
-<<<<<<< HEAD
-    #1. Chrome ブラウザ生成
-    browser = create_browser()
-    #2. サイボウズへ移動
-    saibouzu_url = _config.get(INI_SECTION_BASE,SAIBOUZU_URL_KEY)
-    browser.get(saibouzu_url)
-    #3. グループ切替え画面へ遷移
-=======
     #--------------------------------------------------------
     # 1. Chromeブラウザ生成
     #--------------------------------------------------------
@@ -218,7 +182,6 @@ def run():
     #--------------------------------------------------------
     # 3. 組織切り替え画面へ遷移し組織を選択
     #--------------------------------------------------------
->>>>>>> origin/master
     browser.get( saibouzu_url + '?page=LoginGroup&group=2156&bpage=' )
     group_name = _config.get(INI_SECTION_USER, GROUP_NAME_KEY)
     lst_group_name = browser.find_element_by_name(GROUP_LST_NAME)
@@ -226,14 +189,9 @@ def run():
     select.select_by_visible_text(group_name)
     (browser.find_element_by_name(BTN_KIRIKAE)).click()
     _logger.debug( 'サイボウズ 組織変更成功')
-<<<<<<< HEAD
-    #4. サイボウズログイン
-=======
-
     #--------------------------------------------------------
     # 4. ログイン画面に戻ってユーザID、パスワードを設定してログイン
     #--------------------------------------------------------
->>>>>>> origin/master
     user_name = _config.get(INI_SECTION_USER, USER_NAME_KEY)
     user_passwd = _config.get(INI_SECTION_USER, PASSWD_KEY)
     lstUsrName = browser.find_element_by_name(USER_LST_NAME)
@@ -244,12 +202,6 @@ def run():
     (browser.find_element_by_name(BTN_LOGIN)).click()
     # 実際にログイン出来たのかは判断していない。ログイン出来たと仮定しているだけ
     _logger.debug( 'サイボウズ ログイン成功')
-<<<<<<< HEAD
-    #5. ログイン成功の記念にスクリーンショット
-    save_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'saibo.png')
-    browser.save_screenshot(save_file)
-    #6. ブラウザクローズ
-=======
     #--------------------------------------------------------
     # 5. 記念撮影（スクリーンショット）
     #--------------------------------------------------------
@@ -259,7 +211,6 @@ def run():
     #--------------------------------------------------------
     # 6. ブラウザ閉じる
     #--------------------------------------------------------
->>>>>>> origin/master
     browser.close()
     browser.quit()
 
